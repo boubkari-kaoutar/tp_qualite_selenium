@@ -8,10 +8,14 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.support.ui.WebDriverWait;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import java.time.Duration;
 
 public class LoginFormTests {
 
     private WebDriver driver;
+    private WebDriverWait wait;
     private String urlLogin;
 
     @Before
@@ -22,12 +26,24 @@ public class LoginFormTests {
         // Créer une instance de Chrome
         driver = new ChromeDriver();
 
-        // URL de la page de login (à adapter selon votre emplacement)
-        urlLogin = "file:///C:\\Users\\hp\\Desktop\\tp1_a\\hibernate1\\TP 23  Migration de Eureka vers Consul\\ms_rest_template\\tp_selenium_qualite\\src\\main\\java\\com\\tp\\activite3\\login\\login.html";
+        // Initialiser WebDriverWait avec un timeout de 10 secondes
+        wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+
+        // URL de la page de login
+        urlLogin = "file:///C:\\Users\\hp\\Desktop\\tp1_a\\tp_selenium_qualite\\src\\main\\java\\com\\tp\\activite3\\login\\login.html";
 
         // Ouvrir la page
         driver.get(urlLogin);
         driver.manage().window().maximize();
+
+        // CRITIQUE: Attendre que la page soit complètement chargée
+        try {
+            wait.until(ExpectedConditions.presenceOfElementLocated(By.name("username")));
+            System.out.println("✓ Page chargée avec succès");
+        } catch (Exception e) {
+            System.err.println("✗ Échec du chargement de la page: " + e.getMessage());
+            throw e;
+        }
     }
 
     @After
@@ -46,10 +62,10 @@ public class LoginFormTests {
     public void test_TC01_ConnexionValide() throws InterruptedException {
         System.out.println("=== TEST TC-01 : Connexion avec identifiants valides ===");
 
-        // Localiser les éléments
-        WebElement usernameField = driver.findElement(By.name("username"));
-        WebElement passwordField = driver.findElement(By.name("password"));
-        WebElement loginBtn = driver.findElement(By.id("loginBtn"));
+        // Localiser les éléments avec attente explicite
+        WebElement usernameField = wait.until(ExpectedConditions.elementToBeClickable(By.name("username")));
+        WebElement passwordField = wait.until(ExpectedConditions.elementToBeClickable(By.name("password")));
+        WebElement loginBtn = wait.until(ExpectedConditions.elementToBeClickable(By.id("loginBtn")));
 
         // Saisir les identifiants valides
         usernameField.clear();
@@ -62,7 +78,7 @@ public class LoginFormTests {
         loginBtn.click();
 
         // Attendre la redirection
-        Thread.sleep(3000);
+        wait.until(ExpectedConditions.urlContains("success.html"));
 
         // Vérifier la redirection vers success.html
         String urlActuelle = driver.getCurrentUrl();
@@ -74,7 +90,7 @@ public class LoginFormTests {
         );
 
         // Vérifier le message de succès
-        WebElement titreSucces = driver.findElement(By.tagName("h1"));
+        WebElement titreSucces = wait.until(ExpectedConditions.presenceOfElementLocated(By.tagName("h1")));
         String texteSucces = titreSucces.getText();
         System.out.println("Message de succès : " + texteSucces);
 
@@ -85,7 +101,7 @@ public class LoginFormTests {
         );
 
         // Vérifier la présence du bouton de déconnexion
-        WebElement logoutBtn = driver.findElement(By.id("logoutBtn"));
+        WebElement logoutBtn = wait.until(ExpectedConditions.presenceOfElementLocated(By.id("logoutBtn")));
         Assert.assertTrue(
                 "Le bouton de déconnexion n'est pas visible",
                 logoutBtn.isDisplayed()
@@ -102,10 +118,10 @@ public class LoginFormTests {
     public void test_TC02_MotDePasseIncorrect() throws InterruptedException {
         System.out.println("=== TEST TC-02 : Mot de passe incorrect ===");
 
-        // Localiser les éléments
-        WebElement usernameField = driver.findElement(By.name("username"));
-        WebElement passwordField = driver.findElement(By.name("password"));
-        WebElement loginBtn = driver.findElement(By.id("loginBtn"));
+        // Localiser les éléments avec attente explicite
+        WebElement usernameField = wait.until(ExpectedConditions.elementToBeClickable(By.name("username")));
+        WebElement passwordField = wait.until(ExpectedConditions.elementToBeClickable(By.name("password")));
+        WebElement loginBtn = wait.until(ExpectedConditions.elementToBeClickable(By.id("loginBtn")));
 
         // Saisir un username valide mais mot de passe incorrect
         usernameField.clear();
@@ -117,11 +133,8 @@ public class LoginFormTests {
         // Cliquer sur le bouton de connexion
         loginBtn.click();
 
-        // Attendre l'affichage du message
-        Thread.sleep(2000);
-
-        // Vérifier le message d'erreur
-        WebElement messageErreur = driver.findElement(By.id("message"));
+        // Attendre l'affichage du message d'erreur
+        WebElement messageErreur = wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("message")));
         String texteErreur = messageErreur.getText();
         System.out.println("Message d'erreur : " + texteErreur);
 
@@ -147,10 +160,10 @@ public class LoginFormTests {
     public void test_TC03_UsernameIncorrect() throws InterruptedException {
         System.out.println("=== TEST TC-03 : Username incorrect ===");
 
-        // Localiser les éléments
-        WebElement usernameField = driver.findElement(By.name("username"));
-        WebElement passwordField = driver.findElement(By.name("password"));
-        WebElement loginBtn = driver.findElement(By.id("loginBtn"));
+        // Localiser les éléments avec attente explicite
+        WebElement usernameField = wait.until(ExpectedConditions.elementToBeClickable(By.name("username")));
+        WebElement passwordField = wait.until(ExpectedConditions.elementToBeClickable(By.name("password")));
+        WebElement loginBtn = wait.until(ExpectedConditions.elementToBeClickable(By.id("loginBtn")));
 
         // Saisir un username incorrect et mot de passe valide
         usernameField.clear();
@@ -162,11 +175,8 @@ public class LoginFormTests {
         // Cliquer sur le bouton de connexion
         loginBtn.click();
 
-        // Attendre l'affichage du message
-        Thread.sleep(2000);
-
-        // Vérifier le message d'erreur
-        WebElement messageErreur = driver.findElement(By.id("message"));
+        // Attendre l'affichage du message d'erreur
+        WebElement messageErreur = wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("message")));
         String texteErreur = messageErreur.getText();
         System.out.println("Message d'erreur : " + texteErreur);
 
@@ -192,10 +202,10 @@ public class LoginFormTests {
     public void test_TC04_IdentifiantsIncorrects() throws InterruptedException {
         System.out.println("=== TEST TC-04 : Les deux identifiants incorrects ===");
 
-        // Localiser les éléments
-        WebElement usernameField = driver.findElement(By.name("username"));
-        WebElement passwordField = driver.findElement(By.name("password"));
-        WebElement loginBtn = driver.findElement(By.id("loginBtn"));
+        // Localiser les éléments avec attente explicite
+        WebElement usernameField = wait.until(ExpectedConditions.elementToBeClickable(By.name("username")));
+        WebElement passwordField = wait.until(ExpectedConditions.elementToBeClickable(By.name("password")));
+        WebElement loginBtn = wait.until(ExpectedConditions.elementToBeClickable(By.id("loginBtn")));
 
         // Saisir des identifiants complètement incorrects
         usernameField.clear();
@@ -207,11 +217,8 @@ public class LoginFormTests {
         // Cliquer sur le bouton de connexion
         loginBtn.click();
 
-        // Attendre l'affichage du message
-        Thread.sleep(2000);
-
-        // Vérifier le message d'erreur
-        WebElement messageErreur = driver.findElement(By.id("message"));
+        // Attendre l'affichage du message d'erreur
+        WebElement messageErreur = wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("message")));
         String texteErreur = messageErreur.getText();
         System.out.println("Message d'erreur : " + texteErreur);
 
@@ -237,10 +244,10 @@ public class LoginFormTests {
     public void test_TC05_UsernameVide() throws InterruptedException {
         System.out.println("=== TEST TC-05 : Username vide ===");
 
-        // Localiser les éléments
-        WebElement usernameField = driver.findElement(By.name("username"));
-        WebElement passwordField = driver.findElement(By.name("password"));
-        WebElement loginBtn = driver.findElement(By.id("loginBtn"));
+        // Localiser les éléments avec attente explicite
+        WebElement usernameField = wait.until(ExpectedConditions.elementToBeClickable(By.name("username")));
+        WebElement passwordField = wait.until(ExpectedConditions.elementToBeClickable(By.name("password")));
+        WebElement loginBtn = wait.until(ExpectedConditions.elementToBeClickable(By.id("loginBtn")));
 
         // Laisser username vide, saisir un mot de passe
         usernameField.clear();
@@ -274,10 +281,10 @@ public class LoginFormTests {
     public void test_TC06_MotDePasseVide() throws InterruptedException {
         System.out.println("=== TEST TC-06 : Mot de passe vide ===");
 
-        // Localiser les éléments
-        WebElement usernameField = driver.findElement(By.name("username"));
-        WebElement passwordField = driver.findElement(By.name("password"));
-        WebElement loginBtn = driver.findElement(By.id("loginBtn"));
+        // Localiser les éléments avec attente explicite
+        WebElement usernameField = wait.until(ExpectedConditions.elementToBeClickable(By.name("username")));
+        WebElement passwordField = wait.until(ExpectedConditions.elementToBeClickable(By.name("password")));
+        WebElement loginBtn = wait.until(ExpectedConditions.elementToBeClickable(By.id("loginBtn")));
 
         // Saisir username, laisser mot de passe vide
         usernameField.clear();
@@ -310,10 +317,10 @@ public class LoginFormTests {
     public void test_TC07_ChampsVides() throws InterruptedException {
         System.out.println("=== TEST TC-07 : Les deux champs vides ===");
 
-        // Localiser les éléments
-        WebElement usernameField = driver.findElement(By.name("username"));
-        WebElement passwordField = driver.findElement(By.name("password"));
-        WebElement loginBtn = driver.findElement(By.id("loginBtn"));
+        // Localiser les éléments avec attente explicite
+        WebElement usernameField = wait.until(ExpectedConditions.elementToBeClickable(By.name("username")));
+        WebElement passwordField = wait.until(ExpectedConditions.elementToBeClickable(By.name("password")));
+        WebElement loginBtn = wait.until(ExpectedConditions.elementToBeClickable(By.id("loginBtn")));
 
         // Laisser les deux champs vides
         usernameField.clear();
@@ -344,8 +351,8 @@ public class LoginFormTests {
     public void test_TC08_BoutonConnexionCliquable() {
         System.out.println("=== TEST TC-08 : Bouton de connexion cliquable ===");
 
-        // Localiser le bouton
-        WebElement loginBtn = driver.findElement(By.id("loginBtn"));
+        // Localiser le bouton avec attente explicite
+        WebElement loginBtn = wait.until(ExpectedConditions.elementToBeClickable(By.id("loginBtn")));
 
         // Vérifier que le bouton est affiché
         Assert.assertTrue(
@@ -370,22 +377,22 @@ public class LoginFormTests {
     public void test_TC09_PresenceChamps() {
         System.out.println("=== TEST TC-09 : Présence des champs du formulaire ===");
 
-        // Vérifier la présence du champ username
-        WebElement usernameField = driver.findElement(By.name("username"));
+        // Vérifier la présence du champ username avec attente explicite
+        WebElement usernameField = wait.until(ExpectedConditions.presenceOfElementLocated(By.name("username")));
         Assert.assertTrue(
                 "Le champ username n'est pas visible",
                 usernameField.isDisplayed()
         );
 
         // Vérifier la présence du champ password
-        WebElement passwordField = driver.findElement(By.name("password"));
+        WebElement passwordField = wait.until(ExpectedConditions.presenceOfElementLocated(By.name("password")));
         Assert.assertTrue(
                 "Le champ password n'est pas visible",
                 passwordField.isDisplayed()
         );
 
         // Vérifier la présence du bouton
-        WebElement loginBtn = driver.findElement(By.id("loginBtn"));
+        WebElement loginBtn = wait.until(ExpectedConditions.presenceOfElementLocated(By.id("loginBtn")));
         Assert.assertTrue(
                 "Le bouton de connexion n'est pas visible",
                 loginBtn.isDisplayed()

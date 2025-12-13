@@ -13,9 +13,8 @@ public class TestLoginLocal {
         System.setProperty("webdriver.chrome.driver", "C:\\chromedriver.exe");
         WebDriver driver = new ChromeDriver();
 
-        // URL de la page HTML locale (à modifier selon votre emplacement)
-        // Exemple : "file:///C:/Users/VotreNom/Desktop/login.html"
-        String urlLogin = "file:///C:\\Users\\hp\\Desktop\\tp1_a\\hibernate1\\TP 23  Migration de Eureka vers Consul\\ms_rest_template\\tp_selenium_qualite\\src\\main\\java\\com\\tp\\activite3\\login\\login.html";
+        // URL de la page HTML locale
+        String urlLogin = "file:///C:\\Users\\hp\\Desktop\\tp1_a\\tp_selenium_qualite\\src\\main\\java\\com\\tp\\activite3\\login\\login.html";
 
         try {
             driver.manage().window().maximize();

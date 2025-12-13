@@ -22,7 +22,7 @@ public class RechercheGoogleTests {
         WebDriver driver = new ChromeDriver();
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
 
-        // 🔹 On travaille avec Bing
+        // On travaille avec Bing
         driver.get("https://www.bing.com/");
 
         // Champ de recherche (même name="q" que Google)
